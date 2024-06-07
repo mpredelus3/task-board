@@ -4,13 +4,16 @@ body {
 }
 
 .swim-lanes {
-  min-height: 60vh;
+  display: flex;
+  justify-content: space-around;
+  margin-top: 20px;
+}
+
+.lane {
+  min-height: 500px;
+  padding: 10px;
 }
 
 .task-card {
-  margin: 0 auto;
-}
-
-.task-card:hover {
-  cursor: grab;
+  cursor: move;
 }

@@ -78,16 +78,68 @@ function handleAddTask(event) {
 }
 
 // Todo: create a function to handle deleting a task
-function handleDeleteTask(event){
+function handleAddTask(event) {
+  event.preventDefault();
 
+  const taskTitle = $('#task-title').val();
+  const taskDescription = $('#task-description').val();
+  const taskDueDate = $('#task-due-date').val();
+
+  if (taskTitle && taskDueDate) {
+    const newTask = {
+      id: generateTaskId(),
+      title: taskTitle,
+      description: taskDescription,
+      dueDate: taskDueDate,
+      status: 'to-do'
+    };
+
+    taskList.push(newTask);
+    localStorage.setItem("tasks", JSON.stringify(taskList));
+    renderTaskList();
+    $('#formModal').modal('hide');
+    $('#task-form')[0].reset();
+  }
 }
 
-// Todo: create a function to handle dropping a task into a new status lane
-function handleDrop(event, ui) {
 
+// Todo: create a function to handle dropping a task into a new status lane
+function handleDeleteTask(event) {
+  const taskId = $(event.target).closest('.task-card').data('id');
+  taskList = taskList.filter(task => task.id !== taskId);
+  localStorage.setItem("tasks", JSON.stringify(taskList));
+  renderTaskList();
 }
 
 // Todo: when the page loads, render the task list, add event listeners, make lanes droppable, and make the due date field a date picker
-$(document).ready(function () {
+function handleDrop(event, ui) {
+  const taskCard = ui.draggable;
+  const newStatus = $(this).attr('id');
 
+  const taskId = taskCard.data('id');
+  const task = taskList.find(task => task.id === taskId);
+  task.status = newStatus;
+
+  localStorage.setItem("tasks", JSON.stringify(taskList));
+  renderTaskList();
+}
+
+$(document).ready(function () {
+  if (!taskList) {
+    taskList = [];
+  }
+  renderTaskList();
+
+  $('#add-task-btn').click(handleAddTask);
+  $(document).on('click', '.delete-task', handleDeleteTask);
+
+  $('.lane').droppable({
+    accept: '.task-card',
+    drop: handleDrop
+  });
+
+  $('#task-due-date').datepicker({
+    dateFormat: 'mm/dd/yy'
+  });
 });
+
